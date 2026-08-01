@@ -14,3 +14,8 @@ class NoteResponse(BaseModel):
     user_id: int
     created_at: datetime
     updated_at: datetime | None = None
+
+
+class NoteUpdate(BaseModel):
+    title: str | None = None
+    text: str | None = None
