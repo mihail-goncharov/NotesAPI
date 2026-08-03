@@ -1,17 +1,17 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 
 
 class NoteCreate(BaseModel):
-    title: str
-    text: str | None = None
+    title: str = Field(min_length=1, max_length=100)
+    text: str | None
 
 
 class NoteResponse(BaseModel):
-    id: int
+    id: int = Field(gt=0)
     title: str
     text: str | None = None
-    user_id: int
+    user_id: int = Field(gt=0)
     created_at: datetime
     updated_at: datetime | None = None
 
