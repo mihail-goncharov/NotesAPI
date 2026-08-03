@@ -1,5 +1,5 @@
 from schemas.note import NoteCreate, NoteResponse, NoteUpdate
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from datetime import datetime
 import storage
 
@@ -23,9 +23,11 @@ def create_note(note: NoteCreate) -> NoteResponse:
 
 
 @router.get("/notes", tags=["notes"], status_code=200)
-def get_notes() -> list[NoteResponse]:
+def get_notes(
+        offset: int = Query(default=0, ge=0),
+        limit: int = Query(default=10, gt=0, le=100)) -> list[NoteResponse]:
     user_notes = [note for note in storage.notes if note.user_id == storage.FAKE_USER_ID]
-    return user_notes
+    return user_notes[offset: offset + limit]
 
 
 @router.get("/notes/{note_id}", tags=["notes"], status_code=200)
