@@ -1,13 +1,15 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 
 
 class NoteCreate(BaseModel):
     title: str = Field(min_length=1, max_length=100)
-    text: str | None
+    text: str | None = None
 
 
 class NoteResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int = Field(gt=0)
     title: str
     text: str | None = None
