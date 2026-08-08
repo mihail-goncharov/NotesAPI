@@ -40,7 +40,6 @@ def get_notes(session: SessionDep,
 
 @router.get("/notes/{note_id}", tags=["notes"], status_code=200)
 def get_note(note_id: int, session: SessionDep) -> NoteResponse:
-    # note = session.scalar(select(Note).where(Note.id == note_id))
     note = session.get(Note, note_id)
     if note is not None:
         return NoteResponse.model_validate(note)
@@ -54,7 +53,14 @@ def update_note(note_id: int, updated_note: NoteUpdate, session: SessionDep) -> 
 
     if note is not None:
         if updated_note.title is not None:
+            query = select(Note).where(Note.title == updated_note.title, Note.id != note_id)
+            note_with_same_title = session.scalar(query)
+
+            if note_with_same_title:
+                raise HTTPException(status_code=409, detail="A note with this title already exists")
+
             note.title = updated_note.title
+
         if updated_note.text is not None:
             note.text = updated_note.text
         note.updated_at = datetime.now()
