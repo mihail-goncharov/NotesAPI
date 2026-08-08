@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from routers import note
+from routers import note, auth
 from database.session import create_db_and_tables
 
 
@@ -17,3 +17,4 @@ def read_root():
     return {"Hello": "World"}
 
 app.include_router(note.router)
+app.include_router(auth.router)
