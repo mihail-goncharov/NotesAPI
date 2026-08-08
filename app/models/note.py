@@ -1,10 +1,7 @@
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Integer, String, Text, DateTime, ForeignKey, func
 from datetime import datetime
-
-
-class Base(DeclarativeBase):
-    pass
+from models.base import Base
 
 
 class Note(Base):
@@ -15,4 +12,6 @@ class Note(Base):
     text: Mapped[str] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    user_id: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
+    user: Mapped["User"] = relationship(back_populates="notes")
