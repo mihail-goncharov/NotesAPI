@@ -13,3 +13,13 @@ class UserResponse(BaseModel):
     id: int = Field(gt=0)
     email: EmailStr
     created_at: datetime
+
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: SecretStr
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
