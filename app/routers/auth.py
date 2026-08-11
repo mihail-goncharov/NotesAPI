@@ -1,8 +1,10 @@
-from fastapi import APIRouter, HTTPException
+from typing import Annotated
+
+from fastapi import APIRouter, HTTPException, Depends
 from schemas.user import UserCreate, UserResponse, UserLogin, Token
 from database.session import SessionDep
 from models.user import User
-from services.auth import hash_password, verify_password, create_access_token
+from services.auth import hash_password, verify_password, create_access_token, get_current_user
 from sqlalchemy import select
 
 router = APIRouter()
@@ -34,7 +36,7 @@ def login(user_data: UserLogin, session: SessionDep) -> Token:
     if user is not None:
         password_correct = verify_password(user_data.password.get_secret_value(), user.hashed_password)
         if password_correct:
-            access_token = create_access_token(data={"sub": user.id})
+            access_token = create_access_token(data={"sub": str(user.id)})
             return Token(access_token=access_token, token_type="bearer")
 
 
