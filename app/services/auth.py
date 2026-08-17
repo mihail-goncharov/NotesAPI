@@ -5,17 +5,15 @@ from fastapi import Depends, HTTPException
 from pwdlib import PasswordHash
 import jwt
 from jwt.exceptions import InvalidTokenError
-from database.session import SessionDep
+from database.session import SessionDep, require_env
 from models.user import User
-import os
 from dotenv import load_dotenv
-
 
 load_dotenv()
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTE = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+SECRET_KEY = require_env("SECRET_KEY")
+ALGORITHM = require_env("ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTE = int(require_env("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
 password_hash = PasswordHash.recommended()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -63,7 +61,6 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], session: Ses
 
     except (InvalidTokenError, ValueError):
         raise credentials_exception
-
 
     if user is None:
         raise credentials_exception

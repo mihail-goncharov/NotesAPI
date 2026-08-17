@@ -4,7 +4,7 @@ from datetime import datetime
 
 class UserCreate(BaseModel):
     email: EmailStr
-    password: SecretStr
+    password: SecretStr = Field(min_length=8)
 
 
 class UserResponse(BaseModel):
