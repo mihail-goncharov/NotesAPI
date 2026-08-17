@@ -4,7 +4,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 import os
-from models.note import Base
+from models.base import Base
+from models.note import Note
+from models.user import User
 
 load_dotenv()
 
