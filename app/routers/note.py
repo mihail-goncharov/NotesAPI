@@ -2,7 +2,7 @@ from typing import Annotated
 
 from schemas.note import NoteCreate, NoteResponse, NoteUpdate
 from fastapi import APIRouter, HTTPException, Query, Depends
-from datetime import datetime
+from datetime import datetime, timezone
 from database.session import SessionDep
 from models.note import Note
 from models.user import User
@@ -77,7 +77,7 @@ def update_note(note_id: int,
 
         if updated_note.text is not None:
             note.text = updated_note.text
-        note.updated_at = datetime.now()
+        note.updated_at = datetime.now(timezone.utc)
 
         session.commit()
         session.refresh(note)

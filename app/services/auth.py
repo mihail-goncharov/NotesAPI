@@ -59,10 +59,12 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], session: Ses
         if user_id is None:
             raise credentials_exception
 
-    except InvalidTokenError:
+        user = get_user(user_id=int(user_id), session=session)
+
+    except (InvalidTokenError, ValueError):
         raise credentials_exception
 
-    user = get_user(user_id=int(user_id), session=session)
+
     if user is None:
         raise credentials_exception
 
