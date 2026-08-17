@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Depends
+from fastapi.security import OAuth2PasswordRequestForm
 from schemas.user import UserCreate, UserResponse, UserLogin, Token
 from database.session import SessionDep
 from models.user import User
@@ -39,5 +40,20 @@ def login(user_data: UserLogin, session: SessionDep) -> Token:
             access_token = create_access_token(data={"sub": str(user.id)})
             return Token(access_token=access_token, token_type="bearer")
 
+
+    raise HTTPException(status_code=401, detail="Could not validate credentials")
+
+
+@router.post("/token", tags=["auth"], status_code=200)
+def login_for_swagger(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+                      session: SessionDep,
+                      ) -> Token:
+    user: User = session.scalar(select(User).where(User.email == form_data.username))
+
+    if user is not None:
+        password_correct = verify_password(form_data.password, user.hashed_password)
+        if password_correct:
+            access_token = create_access_token(data={"sub": str(user.id)})
+            return Token(access_token=access_token, token_type="bearer")
 
     raise HTTPException(status_code=401, detail="Could not validate credentials")
