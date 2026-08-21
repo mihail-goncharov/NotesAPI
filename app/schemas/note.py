@@ -1,9 +1,9 @@
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, constr
 from datetime import datetime
 
 
 class NoteCreate(BaseModel):
-    title: str = Field(min_length=1, max_length=100)
+    title: constr(strip_whitespace=True, min_length=1, max_length=100)
     text: str | None = None
 
 
@@ -19,5 +19,5 @@ class NoteResponse(BaseModel):
 
 
 class NoteUpdate(BaseModel):
-    title: str | None = None
+    title: constr(strip_whitespace=True, min_length=1, max_length=100) | None = None
     text: str | None = None
