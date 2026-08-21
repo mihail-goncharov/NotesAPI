@@ -34,7 +34,9 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
         expire = datetime.now(timezone.utc) + expires_delta
 
     else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTE)
+        expire = datetime.now(timezone.utc) + timedelta(
+            minutes=ACCESS_TOKEN_EXPIRE_MINUTE
+        )
 
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(payload=to_encode, key=SECRET_KEY, algorithm=ALGORITHM)
@@ -45,11 +47,14 @@ def get_user(user_id: int, session: SessionDep) -> User:
     return session.get(User, user_id)
 
 
-def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], session: SessionDep):
-    credentials_exception = HTTPException(status_code=401,
-                                          detail="Could not validate credentials",
-                                          headers={"WWW-Authenticate": "Bearer"},
-                                          )
+def get_current_user(
+    token: Annotated[str, Depends(oauth2_scheme)], session: SessionDep
+):
+    credentials_exception = HTTPException(
+        status_code=401,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])

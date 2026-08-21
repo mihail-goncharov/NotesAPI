@@ -39,6 +39,8 @@ def client_fixture(session: Session):
 @pytest.fixture(name="auth_headers")
 def auth_headers_fixture(client: TestClient, session: Session):
     client.post("/register", json={"email": "user@gmail.com", "password": "123456789"})
-    response = client.post("/login", json={"email": "user@gmail.com", "password": "123456789"})
+    response = client.post(
+        "/login", json={"email": "user@gmail.com", "password": "123456789"}
+    )
     token = response.json()["access_token"]
     return {"Authorization": f"Bearer {token}"}

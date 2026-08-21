@@ -2,33 +2,27 @@ from fastapi.testclient import TestClient
 
 
 def test_request_without_token(client: TestClient):
-    response = client.post("/notes",
-                           json={"title": "title", "text": "text"}
-                           )
+    response = client.post("/notes", json={"title": "title", "text": "text"})
 
     assert response.status_code == 401
 
 
 def test_create_note(client: TestClient, auth_headers: dict):
-    response_create_note = client.post("/notes",
-                                       headers=auth_headers,
-                                       json={"title": "title", "text": "text"}
-                                       )
+    response_create_note = client.post(
+        "/notes", headers=auth_headers, json={"title": "title", "text": "text"}
+    )
 
     assert response_create_note.status_code == 201
 
 
 def test_get_own_note(client: TestClient, auth_headers: dict):
-    response_create_note = client.post("/notes",
-                                       headers=auth_headers,
-                                       json={"title": "title", "text": "text"}
-                                       )
+    response_create_note = client.post(
+        "/notes", headers=auth_headers, json={"title": "title", "text": "text"}
+    )
 
     note_id = response_create_note.json()["id"]
 
-    response_get_note = client.get(f"/notes/{note_id}",
-                                   headers=auth_headers
-                                   )
+    response_get_note = client.get(f"/notes/{note_id}", headers=auth_headers)
 
     note = response_get_note.json()
 
@@ -37,15 +31,16 @@ def test_get_own_note(client: TestClient, auth_headers: dict):
 
 
 def test_get_another_users_note(client: TestClient, auth_headers: dict):
-    response_create_note = client.post("/notes",
-                                       headers=auth_headers,
-                                       json={"title": "title", "text": "text"}
-                                       )
+    response_create_note = client.post(
+        "/notes", headers=auth_headers, json={"title": "title", "text": "text"}
+    )
 
     note_id = response_create_note.json()["id"]
 
     client.post("/register", json={"email": "user2@gmail.com", "password": "87654321"})
-    response_other_user = client.post("/login", json={"email": "user2@gmail.com", "password": "87654321"})
+    response_other_user = client.post(
+        "/login", json={"email": "user2@gmail.com", "password": "87654321"}
+    )
     token = response_other_user.json()["access_token"]
     auth = {"Authorization": f"Bearer {token}"}
 
@@ -55,8 +50,10 @@ def test_get_another_users_note(client: TestClient, auth_headers: dict):
 
 
 def test_return_own_notes(client: TestClient, auth_headers: dict):
-    response_create_note1 = client.post("/notes", headers=auth_headers, json={"title": "title", "text": "text"})
-    response_create_note2 = client.post("/notes", headers=auth_headers, json={"title": "title2", "text": "text2"})
+    client.post("/notes", headers=auth_headers, json={"title": "title", "text": "text"})
+    client.post(
+        "/notes", headers=auth_headers, json={"title": "title2", "text": "text2"}
+    )
 
     response_notes = client.get("/notes", headers=auth_headers)
     notes = response_notes.json()
@@ -70,11 +67,17 @@ def test_return_own_notes(client: TestClient, auth_headers: dict):
 
 
 def test_update(client: TestClient, auth_headers: dict):
-    response_create_note = client.post("/notes", headers=auth_headers, json={"title": "title", "text": "text"})
+    response_create_note = client.post(
+        "/notes", headers=auth_headers, json={"title": "title", "text": "text"}
+    )
     note_id = response_create_note.json()["id"]
 
-    response_update_title = client.patch(f"/notes/{note_id}", headers=auth_headers, json={"title": "changed title"})
-    response_update_text = client.patch(f"/notes/{note_id}", headers=auth_headers, json={"text": "changed text"})
+    response_update_title = client.patch(
+        f"/notes/{note_id}", headers=auth_headers, json={"title": "changed title"}
+    )
+    response_update_text = client.patch(
+        f"/notes/{note_id}", headers=auth_headers, json={"text": "changed text"}
+    )
 
     updated_title_note = response_update_title.json()
     updated_text_note = response_update_text.json()
@@ -86,12 +89,16 @@ def test_update(client: TestClient, auth_headers: dict):
 
 
 def test_update_missing_id(client: TestClient, auth_headers: dict):
-    response_update = client.patch("/notes/99999", headers=auth_headers, json={"title": "new title"})
+    response_update = client.patch(
+        "/notes/99999", headers=auth_headers, json={"title": "new title"}
+    )
     assert response_update.status_code == 404
 
 
 def test_delete(client: TestClient, auth_headers: dict):
-    response_create_note = client.post("/notes", headers=auth_headers, json={"title": "title", "text": "text"})
+    response_create_note = client.post(
+        "/notes", headers=auth_headers, json={"title": "title", "text": "text"}
+    )
     note_id = response_create_note.json()["id"]
 
     response_delete_note = client.delete(f"/notes/{note_id}", headers=auth_headers)
@@ -100,6 +107,8 @@ def test_delete(client: TestClient, auth_headers: dict):
 
 
 def test_create_with_empty_title(client: TestClient, auth_headers: dict):
-    response_create_note = client.post("/notes", headers=auth_headers, json={"text": "text"})
+    response_create_note = client.post(
+        "/notes", headers=auth_headers, json={"text": "text"}
+    )
 
     assert response_create_note.status_code == 422

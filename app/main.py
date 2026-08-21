@@ -9,6 +9,7 @@ async def lifespan(app: FastAPI):
     create_db_and_tables()
     yield
 
+
 app = FastAPI(
     title="Notes API",
     description="A REST API where authenticated users manage their personal notes.",
@@ -20,6 +21,7 @@ app = FastAPI(
 @app.get("/")
 def read_root():
     return {"name": "NotesAPI", "docs": "/docs"}
+
 
 app.include_router(note.router)
 app.include_router(auth.router)
