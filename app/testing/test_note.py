@@ -1,91 +1,4 @@
-import os
-
-import pytest
-from dotenv import load_dotenv
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
-from database.session import get_session
-from main import app
-from models.base import Base
-
-load_dotenv()
-
-DB_URI_TEST = os.getenv("DATABASE_URL_TEST")
-
-
-@pytest.fixture(name="session")
-def session_fixture():
-    test_engine = create_engine(DB_URI_TEST)
-    Base.metadata.create_all(test_engine)
-    with Session(test_engine) as session:
-        yield session
-
-    Base.metadata.drop_all(test_engine)
-
-
-@pytest.fixture(name="client")
-def client_fixture(session: Session):
-    def get_session_override():
-        return session
-
-    app.dependency_overrides[get_session] = get_session_override
-
-    client = TestClient(app)
-    yield client
-    app.dependency_overrides.clear()
-
-
-@pytest.fixture(name="auth_headers")
-def auth_headers_fixture(client: TestClient, session: Session):
-    client.post("/register", json={"email": "user@gmail.com", "password": "123456789"})
-    response = client.post("/login", json={"email": "user@gmail.com", "password": "123456789"})
-    token = response.json()["access_token"]
-    return {"Authorization": f"Bearer {token}"}
-
-
-def test_register(client: TestClient):
-    response = client.post(
-        "/register",
-        json={"email": "user2@gmail.com", "password": "123456789"}
-    )
-    data = response.json()
-
-    assert response.status_code == 201
-    assert data["email"] == "user2@gmail.com"
-
-
-def test_duplicate_email(client: TestClient):
-    response = client.post(
-        "/register",
-        json={"email": "user@example.com", "password": "12345678"}
-    )
-    data = response.json()
-
-
-    assert response.status_code == 201
-    assert data["email"] == "user@example.com"
-
-    response = client.post(
-        "/register",
-        json={"email": "user@example.com", "password": "12345678"}
-    )
-
-    assert response.status_code == 409
-
-
-def test_login_wrong_password(client: TestClient):
-    response = client.post(
-        "/register",
-        json={"email": "user@example.com", "password": "12345678"}
-    )
-
-    response = client.post(
-        "/login",
-        json={"email": "user@example.com", "password": "1234567"}
-    )
-
-    assert response.status_code == 401
 
 
 def test_request_without_token(client: TestClient):
@@ -98,18 +11,18 @@ def test_request_without_token(client: TestClient):
 
 def test_create_note(client: TestClient, auth_headers: dict):
     response_create_note = client.post("/notes",
-                           headers=auth_headers,
-                           json={"title": "title", "text": "text"}
-                           )
+                                       headers=auth_headers,
+                                       json={"title": "title", "text": "text"}
+                                       )
 
     assert response_create_note.status_code == 201
 
 
 def test_get_own_note(client: TestClient, auth_headers: dict):
     response_create_note = client.post("/notes",
-                           headers=auth_headers,
-                           json={"title": "title", "text": "text"}
-                           )
+                                       headers=auth_headers,
+                                       json={"title": "title", "text": "text"}
+                                       )
 
     note_id = response_create_note.json()["id"]
 
@@ -121,7 +34,6 @@ def test_get_own_note(client: TestClient, auth_headers: dict):
 
     assert response_get_note.status_code == 200
     assert note["title"] == "title"
-
 
 
 def test_get_another_users_note(client: TestClient, auth_headers: dict):
