@@ -41,7 +41,7 @@ def get_notes(
     offset: int = Query(default=0, ge=0),
     limit: int = Query(default=10, gt=0, le=100),
 ) -> list[NoteResponse]:
-    query = select(Note).where(Note.user_id == user.id).offset(offset).limit(limit)
+    query = select(Note).where(Note.user_id == user.id).offset(offset).limit(limit).order_by(Note.id)
     user_notes = session.scalars(query).all()
     return user_notes
 
