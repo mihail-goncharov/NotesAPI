@@ -17,7 +17,8 @@ Built as a learning project to work through the full backend stack end to end â€
 | ORM | SQLAlchemy 2.x |
 | Auth | JWT (PyJWT), Argon2 password hashing (pwdlib) |
 | Server | Uvicorn |
-| Testing | pytest, FastAPI TestClient |
+| Testing | pytest, pytest-cov, FastAPI TestClient |
+| CI | GitHub Actions (pytest against a PostgreSQL service container) |
 
 ## Features
 
