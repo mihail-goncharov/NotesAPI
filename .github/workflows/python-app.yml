@@ -41,4 +41,6 @@ jobs:
           DATABASE_URL: postgresql+psycopg2://postgres:postgres@localhost:5432/notesapi
           DATABASE_URL_TEST: postgresql+psycopg2://postgres:postgres@localhost:5432/NotesApiTest
           SECRET_KEY: qawsedrftgyh
+          ALGORITHM: HS256
+          ACCESS_TOKEN_EXPIRE_MINUTES: 30
 
