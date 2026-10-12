@@ -1,5 +1,7 @@
 # Notes API
 
+[![CI](https://github.com/mihail-goncharov/NotesAPI/actions/workflows/python-app.yml/badge.svg)](https://github.com/mihail-goncharov/NotesAPI/actions/workflows/python-app.yml)
+
 A REST API where authenticated users can create, read, update, and delete their own personal notes.
 
 Built as a learning project to work through the full backend stack end to end — from request validation and database modelling to JWT authentication and per-user data isolation.
